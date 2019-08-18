@@ -75,7 +75,7 @@ do
     if [ $(files_to_import) -gt 0 ]; then
       convert_books
       echo "Attempting import of $(files_to_import) new files/directories."
-      /opt/calibre/calibredb add $CALIBRE_IMPORT_DIRECTORY -r --with-library $CALIBRE_LIBRARY_DIRECTORY  && rm -rf $CALIBRE_IMPORT_DIRECTORY/*
+      /opt/calibre/calibredb add $CALIBRE_IMPORT_DIRECTORY -r --with-library $CALIBRE_LIBRARY_DIRECTORY && rm -rf $CALIBRE_IMPORT_DIRECTORY/*
     fi
 #TODO: Make this a configurable variable
     echo "Wait..."
