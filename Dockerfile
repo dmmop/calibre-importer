@@ -14,6 +14,10 @@ ENV CALIBRE_IMPORT_DIRECTORY=/opt/calibredb/import
 
 # Outputs extensions
 ENV CALIBRE_OUTPUT_EXTENSIONS="mobi epub"
+
+# File watcher delay (s)econd, (m)inutes, (h)ours, (d)ays
+ENV DELAY_TIME="1m"
+
 # Flag for automatically updating to the latest version on startup
 ENV AUTO_UPDATE=0
 
@@ -47,7 +51,6 @@ RUN chmod a+x /opt/auto_import.sh
 #########################################
 ##         EXPORTS AND VOLUMES         ##
 #########################################
-# VOLUME /opt/calibredb/config
 VOLUME /opt/calibredb/import
 VOLUME /opt/calibredb/library
 

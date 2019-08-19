@@ -32,7 +32,9 @@ check_env_vars(){
   if [ -z "$CALIBRE_IMPORT_DIRECTORY" ]; then
     CALIBRE_IMPORT_DIRECTORY=/opt/calibredb/import
   fi
-  echo "Starting auto-importer process."
+  if [ -z "$DELAY_TIME" ]; then
+    DELAY_TIME="1m"
+  fi
 }
 
 convert_books() {
@@ -69,15 +71,14 @@ files_to_import(){
 }
 check_calibre_version
 check_env_vars
+echo "Starting auto-importer process."
 # Continuously watch for new content in the defined import directory.
 while true
 do
     if [ $(files_to_import) -gt 0 ]; then
       convert_books
-      echo "Attempting import of $(files_to_import) new files/directories."
+      echo "Attempting import of $(files_to_import) new files."
       /opt/calibre/calibredb add $CALIBRE_IMPORT_DIRECTORY -r --with-library $CALIBRE_LIBRARY_DIRECTORY && rm -rf $CALIBRE_IMPORT_DIRECTORY/*
     fi
-#TODO: Make this a configurable variable
-    echo "Wait..."
-    sleep 1m
+    sleep ${DELAY_TIME}
 done
