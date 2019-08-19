@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -ex
 
 check_calibre_version(){
   # Perform a software update, if requested
@@ -36,6 +37,7 @@ check_env_vars(){
     DELAY_TIME="1m"
   fi
 }
+echoerr() { echo "$@" 1>&2; }
 
 convert_books() {
   # Convert string to array
@@ -76,9 +78,17 @@ echo "Starting auto-importer process."
 while true
 do
     if [ $(files_to_import) -gt 0 ]; then
+      # If there are fails, then try to convert
       convert_books
-      echo "Attempting import of $(files_to_import) new files."
-      /opt/calibre/calibredb add $CALIBRE_IMPORT_DIRECTORY -r --with-library $CALIBRE_LIBRARY_DIRECTORY && rm -rf $CALIBRE_IMPORT_DIRECTORY/*
+      # If convert files, retry
+      if (( $(files_to_import) % "${#CALIBRE_OUTPUT_EXTENSIONS[@]}" )); then
+        continue
+      else
+        echo "Attempting import of $(files_to_import) new files."
+        echo ls $CALIBRE_IMPORT_DIRECTORY
+        /opt/calibre/calibredb add $CALIBRE_IMPORT_DIRECTORY -r --with-library $CALIBRE_LIBRARY_DIRECTORY && rm -rf $CALIBRE_IMPORT_DIRECTORY/*
+
+      fi
     fi
     sleep ${DELAY_TIME}
 done
