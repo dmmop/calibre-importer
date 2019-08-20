@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -ex
 check_calibre_version(){
   echo "dmmop/calibre-importer version: $(cat VERSION)"
   # Perform a software update, if requested
@@ -23,15 +23,17 @@ check_calibre_version(){
 
 check_env_vars(){
   # Make sure our environment variables are in place, just in case.
-  [ -z "$CALIBRE_LIBRARY_DIRECTORY" ] && CALIBRE_LIBRARY_DIRECTORY=/opt/calibredb/library
+  [ -z "$CALIBRE_LIBRARY_DIRECTORY" ] && CALIBRE_LIBRARY_DIRECTORY="/opt/calibredb/library"
   # Extensions want to be available
   [ -z "$CALIBRE_OUTPUT_EXTENSIONS" ] && CALIBRE_OUTPUT_EXTENSIONS="epub mobi"
   # Staging area
-  [ -z "$CALIBRE_IMPORT_DIRECTORY" ] && CALIBRE_IMPORT_DIRECTORY=/opt/calibredb/import
+  [ -z "$CALIBRE_IMPORT_DIRECTORY" ] && CALIBRE_IMPORT_DIRECTORY="/opt/calibredb/import"
   # Delay between File Watch
-  [ -z "$DELAY_TIME" ] && DELAY_TIME="1m"
+  if [ -z "$DELAY_TIME" ];then
+     DELAY_TIME="1m"
+  fi
+
 }
-echoerr() { echo "$@" 1>&2; }
 
 convert_books() {
   # Convert string to array
