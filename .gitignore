@@ -4,6 +4,7 @@ release.sh
 import/
 library/
 test.sh
+progress_bar.sh
 docker-compose.yml
 *.epub
 *.mobi

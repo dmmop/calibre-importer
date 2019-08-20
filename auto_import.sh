@@ -1,5 +1,6 @@
 #!/bin/bash
-set -ex
+set -e
+
 check_calibre_version(){
   echo "dmmop/calibre-importer version: $(cat VERSION)"
   # Perform a software update, if requested
