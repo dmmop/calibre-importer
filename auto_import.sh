@@ -1,8 +1,7 @@
 #!/bin/bash
-
-set -ex
-
+set -e
 check_calibre_version(){
+  echo "dmmop/calibre-importer version: $(cat VERSION)"
   # Perform a software update, if requested
   my_version=`/opt/calibre/calibre --version | awk -F'[() ]' '{print $4}'`
   if [ ! "$AUTO_UPDATE" = "1" ]; then
@@ -47,11 +46,11 @@ convert_books() {
 
   # Detect extension files
   for book in ${CALIBRE_IMPORT_DIRECTORY}/*; do
-    basename=${book##*/}
-    file_name=${basename%.*}
+    basename="${book##*/}"
+    file_name="${basename%.*}"
     file_extension=${basename##*.}
-    echo $file_name >> files.tmp
-    echo $file_name >> "${file_extension}.tmp"
+    echo "$file_name" >> files.tmp
+    echo "$file_name" >> "${file_extension}.tmp"
   done
 
   # Convert files to desired extensions
@@ -60,6 +59,7 @@ convert_books() {
     echo "Convert to $extension:"
     while read -r file
     do
+      echo $(ls "${CALIBRE_IMPORT_DIRECTORY}/${file}."*)
       /opt/calibre/ebook-convert "${CALIBRE_IMPORT_DIRECTORY}/${file}."* "${CALIBRE_IMPORT_DIRECTORY}/${file}.${extension}"
     done < <(grep -Fvf "${extension}.tmp" files.tmp)
   done
@@ -85,7 +85,7 @@ do
         continue
       else
         echo "Attempting import of $(files_to_import) new files."
-        echo ls $CALIBRE_IMPORT_DIRECTORY
+        echo $(ls -latrh $CALIBRE_IMPORT_DIRECTORY)
         /opt/calibre/calibredb add $CALIBRE_IMPORT_DIRECTORY -r --with-library $CALIBRE_LIBRARY_DIRECTORY && rm -rf $CALIBRE_IMPORT_DIRECTORY/*
 
       fi
