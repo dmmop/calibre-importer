@@ -23,20 +23,13 @@ check_calibre_version(){
 
 check_env_vars(){
   # Make sure our environment variables are in place, just in case.
-  if [ -z "$CALIBRE_LIBRARY_DIRECTORY" ]; then
-    CALIBRE_LIBRARY_DIRECTORY=/opt/calibredb/library
-  fi
-  # Extensions want to be available 
-  if [ -z "$CALIBRE_OUTPUT_EXTENSIONS" ]; then
-    CALIBRE_OUTPUT_EXTENSIONS="epub mobi"
-  fi
-  if [ -z "$CALIBRE_IMPORT_DIRECTORY" ]; then
-    CALIBRE_IMPORT_DIRECTORY=/opt/calibredb/import
-  fi
+  [ -z "$CALIBRE_LIBRARY_DIRECTORY" ] && CALIBRE_LIBRARY_DIRECTORY=/opt/calibredb/library
+  # Extensions want to be available
+  [ -z "$CALIBRE_OUTPUT_EXTENSIONS" ] && CALIBRE_OUTPUT_EXTENSIONS="epub mobi"
+  # Staging area
+  [ -z "$CALIBRE_IMPORT_DIRECTORY" ] && CALIBRE_IMPORT_DIRECTORY=/opt/calibredb/import
   # Delay between File Watch
-  if [ -z "$DELAY_TIME" ]; then
-    DELAY_TIME="1m"
-  fi
+  [ -z "$DELAY_TIME" ] && DELAY_TIME="1m"
 }
 echoerr() { echo "$@" 1>&2; }
 
@@ -58,7 +51,7 @@ convert_books() {
   # Convert files to desired extensions
   for extension in "${CALIBRE_OUTPUT_EXTENSIONS[@]}"
   do
-    echo "Convert to $extension:"
+    echo "Convert $basename to $extension:"
     while read -r file
     do
       /opt/calibre/ebook-convert "${CALIBRE_IMPORT_DIRECTORY}/${file}."* "${CALIBRE_IMPORT_DIRECTORY}/${file}.${extension}"
