@@ -26,12 +26,14 @@ check_env_vars(){
   if [ -z "$CALIBRE_LIBRARY_DIRECTORY" ]; then
     CALIBRE_LIBRARY_DIRECTORY=/opt/calibredb/library
   fi
+  # Extensions want to be available 
   if [ -z "$CALIBRE_OUTPUT_EXTENSIONS" ]; then
     CALIBRE_OUTPUT_EXTENSIONS="epub mobi"
   fi
   if [ -z "$CALIBRE_IMPORT_DIRECTORY" ]; then
     CALIBRE_IMPORT_DIRECTORY=/opt/calibredb/import
   fi
+  # Delay between File Watch
   if [ -z "$DELAY_TIME" ]; then
     DELAY_TIME="1m"
   fi
@@ -46,11 +48,11 @@ convert_books() {
 
   # Detect extension files
   for book in ${CALIBRE_IMPORT_DIRECTORY}/*; do
-    basename="${book##*/}"
-    file_name="${basename%.*}"
-    file_extension=${basename##*.}
-    echo "$file_name" >> files.tmp
-    echo "$file_name" >> "${file_extension}.tmp"
+    basename="${book##*/}" # Extract basename
+    file_name="${basename%.*}" # Extract name without extension
+    file_extension=${basename##*.} # extract extension
+    echo "$file_name" >> files.tmp # List all files
+    echo "$file_name" >> "${file_extension}.tmp" # List file by extension
   done
 
   # Convert files to desired extensions
@@ -59,7 +61,6 @@ convert_books() {
     echo "Convert to $extension:"
     while read -r file
     do
-      echo $(ls "${CALIBRE_IMPORT_DIRECTORY}/${file}."*)
       /opt/calibre/ebook-convert "${CALIBRE_IMPORT_DIRECTORY}/${file}."* "${CALIBRE_IMPORT_DIRECTORY}/${file}.${extension}"
     done < <(grep -Fvf "${extension}.tmp" files.tmp)
   done
@@ -84,9 +85,11 @@ do
       if (( $(files_to_import) % "${#CALIBRE_OUTPUT_EXTENSIONS[@]}" )); then
         continue
       else
-        echo "Attempting import of $(files_to_import) new files."
-        echo $(ls -latrh $CALIBRE_IMPORT_DIRECTORY)
-        /opt/calibre/calibredb add $CALIBRE_IMPORT_DIRECTORY -r --with-library $CALIBRE_LIBRARY_DIRECTORY && rm -rf $CALIBRE_IMPORT_DIRECTORY/*
+        echo "Attempting import of $(files_to_import) new files:"
+        # List books to add
+        for i in "$(ls $CALIBRE_IMPORT_DIRECTORY)"; do echo -e "\t${i}"; done
+        # Add books to calibre library
+        /opt/calibre/calibredb add $CALIBRE_IMPORT_DIRECTORY -r --with-library="$CALIBRE_LIBRARY_DIRECTORY" && rm -rf $CALIBRE_IMPORT_DIRECTORY/*
 
       fi
     fi

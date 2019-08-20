@@ -36,6 +36,7 @@ RUN apk update && \
     imagemagick \
     qt5-qtbase-x11 \
     xdg-utils \
+    jq \
     xz && \
 #########################################
 ##            APP INSTALL              ##
@@ -47,8 +48,10 @@ RUN apk update && \
 ##            Script Setup             ##
 #########################################
 COPY auto_import.sh /opt/auto_import.sh
+COPY add_formats.sh /opt/add_formats.sh
 COPY VERSION VERSION
 RUN chmod a+x /opt/auto_import.sh
+RUN chmod a+x /opt/add_formats.sh
 
 #########################################
 ##         EXPORTS AND VOLUMES         ##

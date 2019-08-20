@@ -5,3 +5,5 @@ import/
 library/
 test.sh
 docker-compose.yml
+*.epub
+*.mobi
