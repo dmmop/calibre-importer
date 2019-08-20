@@ -1,3 +1,7 @@
 build.sh
 release.sh
 *.docker
+import/
+library/
+test.sh
+docker-compose.yml
