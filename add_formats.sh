@@ -2,12 +2,8 @@
 set -e
 
 # Make sure our environment variables are in place, just in case.
-if [ -z "$CALIBRE_LIBRARY_DIRECTORY" ]; then
-  CALIBRE_LIBRARY_DIRECTORY=/opt/calibredb/library
-fi
-if [ -z "$CALIBRE_OUTPUT_EXTENSIONS" ]; then
-  CALIBRE_OUTPUT_EXTENSIONS="epub mobi"
-fi
+[ -z "$CALIBRE_LIBRARY_DIRECTORY" ] && CALIBRE_LIBRARY_DIRECTORY=/opt/calibredb/library
+[ -z "$CALIBRE_OUTPUT_EXTENSIONS" ] && CALIBRE_OUTPUT_EXTENSIONS="epub mobi"
 # Extract information from calibredb command line.
 /opt/calibre/calibredb list --with-library="${CALIBRE_LIBRARY_DIRECTORY}" --fields formats --for-machine > calibre_list.tmp
 
@@ -39,7 +35,8 @@ do
   for miss_format in ${missing_formats[*]}
   do
     # Path of original book in calibre library
-    source_book=$(echo $book_info_json | jq -c -M '.formats[0]')
+    source_book=$(echo $book_info_json | jq -c -M '.formats[0] // empty')
+    [ -z "$source_book" ] && continue
 
     echo "Adding ${source_book##*/} in ${miss_format}"
     # Convert book to desired format
