@@ -1,4 +1,5 @@
 # Use an Alpine linux base image with GNU libc (aka glibc) pre-installed, courtesy of Vlad Frolov
+
 FROM frolvlad/alpine-glibc
 
 MAINTAINER dmmop
@@ -46,6 +47,7 @@ RUN apk update && \
 ##            Script Setup             ##
 #########################################
 COPY auto_import.sh /opt/auto_import.sh
+COPY VERSION VERSION
 RUN chmod a+x /opt/auto_import.sh
 
 #########################################
