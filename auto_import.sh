@@ -51,6 +51,9 @@ convert_books() {
     echo "$file_name" >> "${file_extension}.tmp" # List file by extension
   done
 
+  # Remove duplicate list of files
+  awk '!a[$0]++' files.tmp > files.tmp
+
   # Convert files to desired extensions
   for extension in "${CALIBRE_OUTPUT_EXTENSIONS[@]}"
   do
