@@ -56,7 +56,7 @@ move_files_to_process() {
     while read -r ebook
     do
         mkdir -p "${SCRIPT_PROCESSING_DIRECTORY}/${ebook}"
-        cp "${CALIBRE_IMPORT_DIRECTORY}/${ebook}."* "${SCRIPT_PROCESSING_DIRECTORY}/${ebook}"
+        mv "${CALIBRE_IMPORT_DIRECTORY}/${ebook}."* "${SCRIPT_PROCESSING_DIRECTORY}/${ebook}"
     done < filesUnique.tmp
 
     rm -r filesUnique.tmp files.tmp
