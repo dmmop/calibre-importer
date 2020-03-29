@@ -1,0 +1,11 @@
+version: '3'
+services:
+  calibre-importer:
+    build: .
+    # Comentario
+    container_name: calibre_importer
+    volumes:
+      - ./import:/opt/calibredb/import
+      - ./library:/opt/calibredb/library
+    environment:
+      - CALIBRE_OUTPUT_EXTENSIONS="epub mobi"
