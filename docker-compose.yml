@@ -8,4 +8,4 @@ services:
       - ./import:/opt/calibredb/import
       - ./library:/opt/calibredb/library
     environment:
-      - CALIBRE_OUTPUT_EXTENSIONS="epub mobi"
+      - CALIBRE_OUTPUT_EXTENSIONS=epub mobi

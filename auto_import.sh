@@ -21,11 +21,12 @@ check_calibre_version(){
 }
 
 
-check_env_vars(){
+check_env_vars() {
     # Make sure our environment variables are in place, just in case.
     [ -z "$CALIBRE_LIBRARY_DIRECTORY" ] && CALIBRE_LIBRARY_DIRECTORY="/opt/calibredb/library"
     # Extensions want to be available
-    [ -z "$CALIBRE_OUTPUT_EXTENSIONS" ] && CALIBRE_OUTPUT_EXTENSIONS="epub mobi"
+    [ -z "$CALIBRE_OUTPUT_EXTENSIONS" ] && CALIBRE_OUTPUT_EXTENSIONS="mobi epub"
+    CALIBRE_OUTPUT_EXTENSIONS=($(echo ${CALIBRE_OUTPUT_EXTENSIONS}))
     # Staging area
     [ -z "$CALIBRE_IMPORT_DIRECTORY" ] && CALIBRE_IMPORT_DIRECTORY="/opt/calibredb/import"
     # Staging area for proccessing books
@@ -33,8 +34,7 @@ check_env_vars(){
     # Delay between File Watch
     if [ -z "$DELAY_TIME" ];then
         DELAY_TIME="1m"
-    fi
-    
+    fi    
 }
 
 
@@ -56,7 +56,7 @@ move_files_to_process() {
     while read -r ebook
     do
         mkdir -p "${SCRIPT_PROCESSING_DIRECTORY}/${ebook}"
-        mv "${CALIBRE_IMPORT_DIRECTORY}/${ebook}."* "${SCRIPT_PROCESSING_DIRECTORY}/${ebook}"
+        cp "${CALIBRE_IMPORT_DIRECTORY}/${ebook}."* "${SCRIPT_PROCESSING_DIRECTORY}/${ebook}"
     done < filesUnique.tmp
 
     rm -r filesUnique.tmp files.tmp
@@ -69,17 +69,16 @@ ebook_convert(){
 
     # Extract missing extensions
     for book in "${book_folder}"*; do
-        basename="${book##*/}" # Extract full filename
-        file_name="${basename%.*}" # Extract name without extension 
+        basename=${book##*/} # Extract full filename
+        file_name=${basename%.*} # Extract name without extension 
         file_extension=${basename##*.} # Extract extension
         echo ${file_extension} >> "${file_name}.tmp"
     done
     missing_extensions=($(grep -Fvf "${file_name}.tmp" target_extensions.tmp))
-
     # Convert book to missing extensions
     for extension in ${missing_extensions[@]}; do
-        echo "Converting ${file_name} to ${extension}"
-        /opt/calibre/ebook-convert "${ebook_folder}/${file_name}."* "${ebook_folder}/${file_name}.${extension}" &
+        echo "Converting \"${file_name}\" to ${extension}"
+        /opt/calibre/ebook-convert "${ebook_folder}/${file_name}."* "${ebook_folder}/${file_name}.${extension}" >/dev/null 2>&1 &
     done
 
     wait # Wait to convert all files
@@ -91,8 +90,8 @@ ebook_convert(){
 
 process_ebooks() {
     # Extract target extensions
-    for extension in "${CALIBRE_OUTPUT_EXTENSIONS[@]}";do echo "${extension}" >> target_extensions.tmp; done
-
+    echo "Output extensions:" ${CALIBRE_OUTPUT_EXTENSIONS[@]}
+    for extension in ${CALIBRE_OUTPUT_EXTENSIONS[@]};do echo ${extension} >> target_extensions.tmp; done
     move_files_to_process
 
     # Iterate over all book folder
@@ -119,4 +118,5 @@ do
     else
         sleep ${DELAY_TIME}
     fi
+    sleep "10s"
 done
