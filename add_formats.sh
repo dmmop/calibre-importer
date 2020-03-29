@@ -26,6 +26,7 @@ extract_extensions() {
   done <<<$(echo "$book_info_json" | jq -c -M '.formats[]')
   echo "${extensions[@]}"
 }
+
 # TODO: Add progress bar
 n_books=$(jq -c -M '. | length' calibre_list.tmp)
 while read book_info_json;
